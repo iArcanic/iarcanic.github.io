@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+env/
+venv/
+ENV/
+.ipynb_checkpoints
+
+# Jekyll
+_site/
+.sass-cache/
+.jekyll-cache/
+.jekyll-metadata
+.bundle/
+vendor/
+
+# Logs and Databases
+*.log
+*.sql
+*.sqlite
+*.db
+
+# System Files
+.DS_Store
+Thumbs.db
