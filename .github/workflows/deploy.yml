@@ -12,6 +12,18 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            **/node_modules
+          key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+
       - name: Install Dependencies
         run: npm install
 
@@ -19,7 +31,13 @@ jobs:
         run: npm run build
 
       - name: Deploy to GitHub Pages
-        run: npm run deploy
+        run: |
+          git config --global user.name $user_name
+          git config --global user.email $user_email
+          git remote set-url origin https://${github_token}@github.com/${repository}
+          npm run deploy
         env:
-          CI: true
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}
+          user_name: "github-actions[bot]"
+          user_email: "github-actions[bot]@users.noreply.github.com"
+          github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }}
+          repository: ${{ github.repository }}
