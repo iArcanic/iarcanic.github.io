@@ -79,3 +79,24 @@ body {
 .command-input:focus {
   outline: none; /* Remove focus outline */
 }
+
+.terminal-link {
+  color: #888888;
+  text-decoration: none;
+}
+
+.terminal-link:hover {
+  text-decoration: underline;
+}
+
+.terminal-link svg {
+  vertical-align: middle;
+  margin-right: 5px;
+}
+
+.ascii-art {
+  white-space: pre;
+  font-family: "Courier New", Courier, monospace;
+  color: #ffffff; /* Set your desired color */
+  margin-bottom: 20px;
+}
