@@ -7,6 +7,9 @@ function App() {
   const [currentTime, setCurrentTime] = useState("");
   const [timezone, setTimezone] = useState("");
   const inputRef = useRef(null);
+  const [outputs, setOutputs] = useState([]);
+  const [commandHistory, setCommandHistory] = useState([]);
+  const [historyIndex, setHistoryIndex] = useState(-1);
 
   useEffect(() => {
     const fetchTimeAndTimezone = () => {
@@ -43,7 +46,99 @@ function App() {
 
   const handleCommandSubmit = (event) => {
     event.preventDefault();
-    setInputValue("");
+    const trimmedInput = inputValue.trim();
+    if (trimmedInput !== "") {
+      processCommand(trimmedInput); // Process the entered command
+      setCommandHistory((prevHistory) => [...prevHistory, trimmedInput]);
+    }
+    setInputValue(""); // Clear input after submitting
+    setHistoryIndex(-1); // Reset history index after submitting a new command
+  };
+
+  const processCommand = (command) => {
+    let newOutput = []; // Temp array to collect new output
+    switch (command.trim().toLowerCase()) {
+      case "about":
+        newOutput = [
+          "Name: Preetham Ananthkumar",
+          "Website: https://iarcanic.github.io",
+          "Role: Software Engineer",
+        ];
+        break;
+      case "clear":
+        setOutputs([]); // Clear all outputs
+        return;
+      case "help":
+        newOutput = [
+          "Available commands:",
+          "- about: Display information about me",
+          "- clear: Clear the terminal screen",
+          "- help: Display this help message",
+          "- repo: Redirect to this website's GitHub repository",
+          "- github: Redirect to iArcanic's GitHub Profile",
+          "- linkedin: Redirect to iArcanic's Linkedin Profile",
+          "- resume: Download iArcanic's resume PDF",
+          "- quit or exit: Close the terminal",
+        ];
+        break;
+      case "repo":
+        window.open("https://github.com/iArcanic/iarcanic.github.io", "_blank");
+        return;
+      case "github":
+        window.open("https://github.com/iArcanic", "_blank");
+        return;
+      case "linkedin":
+        window.open(
+          "https://www.linkedin.com/in/preethamananthkumar/",
+          "_blank"
+        );
+        return;
+      case "quit":
+      case "exit":
+        window.close();
+        return;
+      default:
+        newOutput = [
+          `bash: command not found: '${command}'`,
+          `Type 'help' to see a list of available commands.`,
+        ];
+        break;
+    }
+    setOutputs((prevOutputs) => [
+      ...prevOutputs,
+      { command, output: newOutput },
+    ]); // Update outputs with new output
+  };
+
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
+      // Submit command on Ctrl+Enter or Cmd+Enter
+      handleCommandSubmit(event);
+    } else if (event.key === "ArrowUp") {
+      // Handle arrow key navigation for command history
+      if (historyIndex < commandHistory.length - 1) {
+        const newIndex = historyIndex + 1;
+        setHistoryIndex(newIndex);
+        setInputValue(commandHistory[newIndex]);
+      }
+    } else if (event.key === "ArrowDown") {
+      if (historyIndex >= 0) {
+        const newIndex = historyIndex - 1;
+        setHistoryIndex(newIndex);
+        setInputValue(newIndex >= 0 ? commandHistory[newIndex] : "");
+      }
+    } else if (event.key === "u" && (event.ctrlKey || event.metaKey)) {
+      // Ctrl+U to clear input line
+      setInputValue("");
+    } else if (event.key === "e" && (event.ctrlKey || event.metaKey)) {
+      // Ctrl+E to go to end of input line
+      inputRef.current.selectionStart = inputRef.current.value.length;
+      inputRef.current.selectionEnd = inputRef.current.value.length;
+    } else if (event.key === "a" && (event.ctrlKey || event.metaKey)) {
+      // Ctrl+A to go to beginning of input line
+      inputRef.current.selectionStart = 0;
+      inputRef.current.selectionEnd = 0;
+    }
   };
 
   const asciiArt = `
@@ -125,16 +220,30 @@ $$ |$$ |  $$ |$$ |      \\$$$$$$$\\ \\$$$$$$$ |$$ |  $$ |$$ |\\$$$$$$$\\
           <br />
           <br />
           <span>Last login: {timezone}</span>
+          <br />
         </div>
-
+        <br />
+        {outputs.map((output, index) => (
+          <div key={index} className="terminal-output">
+            <div className="prompt-history">
+              <span className="command-prompt">$</span>
+              <span>{output.command}</span>
+            </div>
+            {output.output.map((line, idx) => (
+              <div key={idx}>{line}</div>
+            ))}
+          </div>
+        ))}
         <form onSubmit={handleCommandSubmit} className="terminal-prompt">
           <span className="command-prompt">$</span>
           <input
+            ref={inputRef}
             type="text"
             className="command-input"
             placeholder=""
             value={inputValue}
             onChange={handleInputChange}
+            onKeyDown={(e) => handleKeyDown(e)}
             autoFocus
           />
         </form>
