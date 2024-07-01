@@ -11,7 +11,7 @@
     "react-scripts": "^5.0.1",
     "web-vitals": "^2.1.4"
   },
-  "homepage": "https://iarcanic.github.io",
+  "homepage": "https://iarcanic.github.io/iarcanic.github.io",
   "scripts": {
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
