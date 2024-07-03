@@ -1,18 +1,111 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: "Roboto Mono", monospace; /* Replace with your chosen terminal font */
+  font-family: "Roboto Mono", monospace;
 }
 
-.terminal-window {
-  background-color: black;
-  color: white;
-  height: 100vh;
+.toggle-button {
+  padding: 10px;
+  background-color: #444;
+  color: #fff;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.3);
   display: flex;
-  justify-content: flex-start;
-  align-items: flex-start;
-  padding: 1rem;
-  overflow: hidden;
+  align-items: center;
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.toggle-button:hover {
+  background-color: #666;
+}
+
+/* Dark mode icon color */
+.toggle-button .icon-moon {
+  color: #fff;
+}
+
+/* Light mode icon color */
+.toggle-button .icon-sun {
+  color: #000;
+}
+
+/* Icon styles */
+.toggle-button .icon {
+  margin-right: 5px;
+  font-size: 20px;
+}
+
+/* Dark mode styles */
+.dark-mode {
+  background-color: #222;
+  color: #fff;
+}
+
+/* Light mode styles */
+.light-mode {
+  background-color: #cecece;
+  color: #333;
+}
+
+/* Adjust terminal text color for better visibility */
+.light-mode .terminal-content {
+  color: #333; /* Darker text on light background */
+}
+
+/* Ensure ASCII art and terminal text are visible in light mode */
+.light-mode pre.ascii-art {
+  color: #000000; /* Darker color for ASCII art */
+}
+
+.light-mode .terminal-welcome {
+  color: #333;
+}
+
+.light-mode .terminal-prompt {
+  color: #333;
+}
+
+.light-mode .terminal-link {
+  color: #333;
+}
+
+.light-mode .terminal-info {
+  color: #333;
+}
+
+.light-mode .command-input {
+  color: #000000;
+}
+
+.top-buttons {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  gap: 0.5rem;
+  margin: 1rem;
+}
+
+.mode-toggle,
+.color-scheme-toggle {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.mode-toggle:hover,
+.color-scheme-toggle:hover {
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
 .terminal-content {
@@ -21,31 +114,32 @@ body {
   padding: 1rem;
 }
 
+/* Terminal welcome info */
 .terminal-welcome {
   white-space: pre-wrap;
   font-size: 0.9rem;
   margin-bottom: 1rem;
-  color: #888888; /* Light gray color */
+  color: #888888;
   overflow: hidden;
 }
 
 .terminal-info {
   font-size: 0.9rem;
   line-height: 1.2;
-  color: #888888; /* Light gray color */
+  color: #888888;
 }
 
 .info-line {
   display: grid;
-  grid-template-columns: auto 0.5fr auto 1fr; /* Adjust as needed */
+  grid-template-columns: auto 0.5fr auto 1fr;
   gap: 0.5rem; /* Adjust spacing between cells */
 }
 
 .info-label {
   font-weight: bold;
   display: block;
-  min-width: 125px; /* Adjust as needed for alignment */
-  text-align: left; /* Align labels to the right */
+  min-width: 125px;
+  text-align: left;
 }
 
 .terminal-prompt {
@@ -67,17 +161,17 @@ body {
   color: white;
   font-family: "Roboto Mono", monospace;
   font-size: 1rem;
-  width: calc(100% - 1rem); /* Adjust as needed */
-  caret-color: white; /* Cursor color */
-  cursor: text; /* Set cursor to text style */
+  width: calc(100% - 1rem);
+  caret-color: white;
+  cursor: text;
 }
 
 .command-input::placeholder {
-  color: transparent; /* Hide placeholder text */
+  color: transparent;
 }
 
 .command-input:focus {
-  outline: none; /* Remove focus outline */
+  outline: none;
 }
 
 .terminal-link {
@@ -97,6 +191,87 @@ body {
 .ascii-art {
   white-space: pre;
   font-family: "Courier New", Courier, monospace;
-  color: #ffffff; /* Set your desired color */
+  color: #ffffff;
   margin-bottom: 20px;
+}
+
+#command-input {
+  animation: afterglow 1.5s ease-in-out infinite;
+}
+
+@keyframes afterglow {
+  0%,
+  100% {
+    text-shadow: 0 0 15px rgba(255, 255, 255, 1);
+  }
+  50% {
+    text-shadow: 0 0 25px rgba(255, 255, 255, 1);
+  }
+}
+
+.output-container {
+  width: 100%;
+}
+
+.App {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+.terminal-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.macos-btn {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.macos-btn .icon {
+  display: none;
+  font-size: 8px;
+  color: #fff;
+}
+
+.macos-btn:hover .icon {
+  display: block;
+}
+
+.close-btn {
+  background-color: #ff5f57;
+}
+
+.minimize-btn {
+  background-color: #ffbd2e;
+}
+
+.maximize-btn {
+  background-color: #28c840;
+}
+
+.header-buttons {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  gap: 0.5rem;
+  margin: 1rem;
+}
+
+.header-buttons span {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
 }

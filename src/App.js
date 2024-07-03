@@ -1,6 +1,19 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./App.css";
-import { FaGithub, FaLinkedin, FaFilePdf } from "react-icons/fa";
+import {
+  FaGithub,
+  FaLinkedin,
+  FaFilePdf,
+  FaSun,
+  FaMoon,
+  FaEnvelope,
+  FaUserCircle,
+  FaTimes,
+  FaMinus,
+  FaExpand,
+} from "react-icons/fa";
+import hljs from "highlight.js";
+import "highlight.js/styles/monokai-sublime.css";
 
 function App() {
   const [inputValue, setInputValue] = useState("");
@@ -10,6 +23,117 @@ function App() {
   const [outputs, setOutputs] = useState([]);
   const [commandHistory, setCommandHistory] = useState([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
+  const [isDarkMode, setIsDarkMode] = useState(true);
+  const [currentScheme, setCurrentScheme] = useState("default");
+
+  const colorSchemes = {
+    light: {
+      default: {
+        background: "#e6e6e6",
+        text: "#333",
+        asciiArt: "#333",
+        terminalInfo: "#333",
+        prompt: "#7fdbff",
+        command: "#0000ff",
+        result: "#333",
+      },
+      monokai: {
+        background: "#f9f8f5",
+        text: "#272822",
+        asciiArt: "#272822",
+        terminalInfo: "#272822",
+        prompt: "#f92672",
+        command: "#a6e22e",
+        result: "#272822",
+      },
+      gruvbox: {
+        background: "#fbf1c7",
+        text: "#3c3836",
+        asciiArt: "#3c3836",
+        terminalInfo: "#3c3836",
+        prompt: "#d65d0e",
+        command: "#b8bb26",
+        result: "#3c3836",
+      },
+      solarized: {
+        background: "#fdf6e3",
+        text: "#657b83",
+        asciiArt: "#657b83",
+        terminalInfo: "#657b83",
+        prompt: "#268bd2",
+        command: "#2aa198",
+        result: "#657b83",
+      },
+      dracula: {
+        background: "#f8f8f2",
+        text: "#282a36",
+        asciiArt: "#282a36",
+        terminalInfo: "#282a36",
+        prompt: "#ff79c6",
+        command: "#50fa7b",
+        result: "#282a36",
+      },
+    },
+    dark: {
+      default: {
+        background: "#222",
+        text: "#fff",
+        asciiArt: "#fff",
+        terminalInfo: "#fff",
+        prompt: "#7fdbff",
+        command: "#00ff00",
+        result: "#fff",
+      },
+      monokai: {
+        background: "#272822",
+        text: "#f8f8f2",
+        asciiArt: "#f8f8f2",
+        terminalInfo: "#f8f8f2",
+        prompt: "#f92672",
+        command: "#a6e22e",
+        result: "#f8f8f2",
+      },
+      gruvbox: {
+        background: "#282828",
+        text: "#ebdbb2",
+        asciiArt: "#ebdbb2",
+        terminalInfo: "#ebdbb2",
+        prompt: "#d65d0e",
+        command: "#b8bb26",
+        result: "#ebdbb2",
+      },
+      solarized: {
+        background: "#002b36",
+        text: "#839496",
+        asciiArt: "#839496",
+        terminalInfo: "#839496",
+        prompt: "#268bd2",
+        command: "#2aa198",
+        result: "#839496",
+      },
+      dracula: {
+        background: "#282a36",
+        text: "#f8f8f2",
+        asciiArt: "#f8f8f2",
+        terminalInfo: "#f8f8f2",
+        prompt: "#ff79c6",
+        command: "#50fa7b",
+        result: "#f8f8f2",
+      },
+    },
+  };
+
+  const commands = [
+    "about",
+    "clear",
+    "help",
+    "repo",
+    "github",
+    "linkedin",
+    "resume",
+    "quit",
+    "exit",
+  ];
 
   useEffect(() => {
     const fetchTimeAndTimezone = () => {
@@ -38,6 +162,12 @@ function App() {
     if (inputRef.current) {
       inputRef.current.focus();
     }
+
+    const interval = setInterval(() => {
+      fetchTimeAndTimezone();
+    }, 1000); // Update time every second
+
+    return () => clearInterval(interval);
   }, []); // Empty dependency array ensures this runs only once
 
   const handleInputChange = (event) => {
@@ -62,11 +192,10 @@ function App() {
         newOutput = [
           "Name: Preetham Ananthkumar",
           "Website: https://iarcanic.github.io",
-          "Role: Software Engineer",
         ];
         break;
       case "clear":
-        setOutputs([]); // Clear all outputs
+        setOutputs([]);
         return;
       case "help":
         newOutput = [
@@ -78,28 +207,40 @@ function App() {
           "- github: Redirect to iArcanic's GitHub Profile",
           "- linkedin: Redirect to iArcanic's Linkedin Profile",
           "- resume: Download iArcanic's resume PDF",
-          "- quit or exit: Close the terminal",
+          "- spotify: Redirec to iArcanic's Spotify Profile",
+          "- quit or exit: Close this tab",
         ];
         break;
       case "repo":
+        newOutput = ["Redirecting to repo..."];
         window.open("https://github.com/iArcanic/iarcanic.github.io", "_blank");
-        return;
+        break;
       case "github":
+        newOutput = ["Redirecting to GitHub profile..."];
         window.open("https://github.com/iArcanic", "_blank");
-        return;
+        break;
       case "linkedin":
+        newOutput = ["Redirecting to LinkedIn profile..."];
         window.open(
           "https://www.linkedin.com/in/preethamananthkumar/",
           "_blank"
         );
-        return;
+        break;
+      case "spotify":
+        newOutput = ["Redirecting to Spotify profile..."];
+        window.open(
+          "https://open.spotify.com/user/mqn5u81bu4cam0fut7hc417aa",
+          "_blank"
+        );
+        break;
       case "quit":
       case "exit":
+        newOutput = ["Goodbye!"];
         window.close();
-        return;
+        break;
       default:
         newOutput = [
-          `bash: command not found: '${command}'`,
+          `zsh: command not found: '${command}'`,
           `Type 'help' to see a list of available commands.`,
         ];
         break;
@@ -112,10 +253,8 @@ function App() {
 
   const handleKeyDown = (event) => {
     if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
-      // Submit command on Ctrl+Enter or Cmd+Enter
       handleCommandSubmit(event);
     } else if (event.key === "ArrowUp") {
-      // Handle arrow key navigation for command history
       if (historyIndex < commandHistory.length - 1) {
         const newIndex = historyIndex + 1;
         setHistoryIndex(newIndex);
@@ -138,10 +277,98 @@ function App() {
       // Ctrl+A to go to beginning of input line
       inputRef.current.selectionStart = 0;
       inputRef.current.selectionEnd = 0;
+    } else if (!isNaN(event.key) && event.key >= 0 && event.key <= 9) {
+      event.preventDefault();
+      if (event.key >= 1 && event.key <= 5) {
+        const schemeIndex = event.key - 1;
+        const schemes = Object.keys(colorSchemes.light);
+        setCurrentScheme(schemes[schemeIndex]);
+      }
+    } else if (event.key === "Tab") {
+      event.preventDefault();
+      handleTabCompletion();
     }
   };
 
-  const asciiArt = `
+  const handleTabCompletion = () => {
+    const matches = commands.filter((command) =>
+      command.startsWith(inputValue.trim())
+    );
+
+    if (matches.length === 1) {
+      setInputValue(matches[0] + " ");
+    } else if (matches.length > 1) {
+      setOutputs((prevOutputs) => [
+        ...prevOutputs,
+        { command: inputValue, output: matches },
+      ]);
+    }
+  };
+
+  useEffect(() => {
+    hljs.highlightAll();
+  }, [outputs]);
+
+  const toggleDarkMode = () => {
+    setIsDarkMode((prevMode) => !prevMode);
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  };
+
+  const applyColorScheme = () => {
+    const scheme = isDarkMode
+      ? colorSchemes.dark[currentScheme]
+      : colorSchemes.light[currentScheme];
+
+    return {
+      backgroundColor: scheme.background,
+      color: scheme.text,
+    };
+  };
+
+  const getCurrentColorScheme = () => {
+    return colorSchemes[isDarkMode ? "dark" : "light"][currentScheme];
+  };
+
+  const { background, text, terminalInfo, prompt, command, result, asciiArt } =
+    getCurrentColorScheme();
+
+  const closeTab = () => {
+    window.close();
+  };
+
+  const toggleFullScreen = () => {
+    if (
+      document.fullscreenElement ||
+      document.webkitFullscreenElement ||
+      document.mozFullScreenElement ||
+      document.msFullscreenElement
+    ) {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+      } else if (document.mozCancelFullScreen) {
+        document.mozCancelFullScreen();
+      } else if (document.msExitFullscreen) {
+        document.msExitFullscreen();
+      }
+    } else {
+      const docEl = document.documentElement;
+      if (docEl.requestFullscreen) {
+        docEl.requestFullscreen();
+      } else if (docEl.webkitRequestFullscreen) {
+        docEl.webkitRequestFullscreen();
+      } else if (docEl.mozRequestFullScreen) {
+        docEl.mozRequestFullScreen();
+      } else if (docEl.msRequestFullscreen) {
+        docEl.msRequestFullscreen();
+      }
+    }
+  };
+
+  const asciiArtDisplay = `
 $$\\  $$$$$$\\                                          $$\\           
 \\__|$$  __$$\\                                         \\__|          
 $$\\ $$ /  $$ | $$$$$$\\   $$$$$$$\\  $$$$$$\\  $$$$$$$\\  $$\\  $$$$$$$\\ 
@@ -153,55 +380,129 @@ $$ |$$ |  $$ |$$ |      \\$$$$$$$\\ \\$$$$$$$ |$$ |  $$ |$$ |\\$$$$$$$\\
   `;
 
   return (
-    <div className="terminal-window">
-      <div className="terminal-content">
-        <pre className="ascii-art">{asciiArt}</pre>
-        <div className="terminal-welcome">
+    <div
+      className="App"
+      style={{
+        backgroundColor: background,
+        color: text,
+        minHeight: "100vh",
+        padding: "20px",
+        fontFamily: "monospace",
+      }}
+    >
+      <div className="top-buttons">
+        <button className="mode-toggle" onClick={toggleDarkMode}>
+          {isDarkMode ? <FaSun /> : <FaMoon />}
+        </button>
+        {Object.keys(colorSchemes.light).map((scheme, index) => (
+          <button
+            key={scheme}
+            className="color-scheme-toggle"
+            onClick={() => setCurrentScheme(scheme)}
+          >
+            {index + 1}
+          </button>
+        ))}
+      </div>
+      <div className="header-buttons">
+        <button className="macos-btn close-btn" onClick={closeTab}>
+          <FaTimes className="icon" />
+        </button>
+        <button className="macos-btn minimize-btn">
+          <FaMinus className="icon" />
+        </button>
+        <button className="macos-btn maximize-btn" onClick={toggleFullScreen}>
+          <FaExpand className="icon" />
+        </button>
+      </div>
+      <div className="terminal-content" style={applyColorScheme()}>
+        <pre className="ascii-art" style={{ color: asciiArt }}>
+          {asciiArtDisplay}
+        </pre>
+        <div
+          className="terminal-welcome"
+          style={{ color: applyColorScheme().terminalInfo }}
+        >
           Welcome to iArcanic's Portfolio Website!
           <br></br>
-          <br />* Name: <span>Preetham Ananthkumar</span>
-          <br />* <FaGithub />{" "}
-          <a href="https://github.com/iArcanic" className="terminal-link">
+          <br />* <FaUserCircle style={{ color: terminalInfo }} />{" "}
+          <span style={{ color: command }}>Preetham Ananthkumar</span>
+          <br />* <FaEnvelope style={{ color: terminalInfo }} />{" "}
+          <a
+            href="mailto:preetham.mervin@gmail.com"
+            className="terminal-link"
+            style={{ color: command }}
+          >
+            preetham.mervin@gmail.com
+          </a>
+          <br />* <FaGithub style={{ color: terminalInfo }} />{" "}
+          <a
+            href="https://github.com/iArcanic"
+            className="terminal-link"
+            style={{ color: command }}
+          >
             iArcanic
           </a>
-          <br />* <FaLinkedin />{" "}
+          <br />* <FaLinkedin style={{ color: terminalInfo }} />{" "}
           <a
             href="https://www.linkedin.com/in/preetham-ananthkumar"
             className="terminal-link"
+            style={{ color: command }}
           >
             Preetham Ananthkumar
           </a>
-          <br />* <FaFilePdf />{" "}
-          <a href="/path/to/resume.pdf" className="terminal-link" download>
+          <br />* <FaFilePdf style={{ color: terminalInfo }} />{" "}
+          <a
+            href="/path/to/resume.pdf"
+            className="terminal-link"
+            style={{ color: command }}
+            download
+          >
             Download Resume
           </a>
           <br></br>
           <br></br>
-          <span>System information as of {timezone}</span>
+          <span style={{ color: terminalInfo }}>
+            System information as of {timezone}
+          </span>
         </div>
 
         <div className="terminal-info">
           <div className="info-line">
-            <span className="info-label">System load:</span>
-            <span>0.01</span>
-            <span className="info-label">Processes:</span>
-            <span>231</span>
+            <span className="info-label" style={{ color: terminalInfo }}>
+              System load:
+            </span>
+            <span style={{ color: prompt }}>0.01</span>
+            <span className="info-label" style={{ color: terminalInfo }}>
+              Processes:
+            </span>
+            <span style={{ color: prompt }}>231</span>
           </div>
           <div className="info-line">
-            <span className="info-label">Usage of /:</span>
-            <span>68.0% of 47.41GB</span>
-            <span className="info-label">Users:</span>
-            <span>1</span>
+            <span className="info-label" style={{ color: terminalInfo }}>
+              Usage of /:
+            </span>
+            <span style={{ color: prompt }}>68.0% of 47.41GB</span>
+            <span className="info-label" style={{ color: terminalInfo }}>
+              Users:
+            </span>
+            <span style={{ color: prompt }}>1</span>
           </div>
           <div className="info-line">
-            <span className="info-label">Memory usage:</span>
-            <span>5%</span>
-            <span className="info-label">IPv4 address:</span>
-            <span>192.168.1.89</span>
+            <span className="info-label" style={{ color: terminalInfo }}>
+              Memory usage:
+            </span>
+            <span style={{ color: prompt }}>5%</span>
+            <span className="info-label" style={{ color: terminalInfo }}>
+              IPv4 address:
+            </span>
+            <span style={{ color: prompt }}>192.168.1.89</span>
           </div>
           <div className="info-line">
-            <span className="info-label">Swap usage:</span>
-            <span>0%</span>
+            <span className="info-label" style={{ color: terminalInfo }}>
+              Swap usage:
+            </span>
+            <span style={{ color: prompt }}>0%</span>
           </div>
           <br />
           <span>*** Type 'help' for a list of all available commands ***</span>
@@ -218,25 +519,41 @@ $$ |$$ |  $$ |$$ |      \\$$$$$$$\\ \\$$$$$$$ |$$ |  $$ |$$ |\\$$$$$$$\\
             ***
           </span>
           <br />
+          <span>
+            *** Toggle between light and dark modes with the icon at the top
+            left ***
+          </span>
           <br />
-          <span>Last login: {timezone}</span>
+          <span>
+            *** Use keys (1, 2, 3, 4, 5) or buttons at the top left to change
+            colour scheme ***
+          </span>
+          <br />
+          <br />
+          <span style={{ color: terminalInfo }}>Last login: {timezone}</span>
           <br />
         </div>
         <br />
-        {outputs.map((output, index) => (
-          <div key={index} className="terminal-output">
-            <div className="prompt-history">
-              <span className="command-prompt">$</span>
-              <span>{output.command}</span>
+        <div className="output-container">
+          {outputs.map((output, index) => (
+            <div key={index} className="command-output">
+              <div className="command" style={{ color: command }}>
+                iarcanic@portfolio:~$&nbsp; {output.command}
+              </div>
+              {output.output.map((line, idx) => (
+                <pre key={idx} className="output" style={{ color: result }}>
+                  {line}
+                </pre>
+              ))}
             </div>
-            {output.output.map((line, idx) => (
-              <div key={idx}>{line}</div>
-            ))}
-          </div>
-        ))}
+          ))}
+        </div>
         <form onSubmit={handleCommandSubmit} className="terminal-prompt">
-          <span className="command-prompt">$</span>
+          <label htmlFor="command-input" style={{ color: prompt }}>
+            iarcanic@portfolio:~$&nbsp;
+          </label>
           <input
+            id="command-input"
             ref={inputRef}
             type="text"
             className="command-input"
@@ -244,7 +561,17 @@ $$ |$$ |  $$ |$$ |      \\$$$$$$$\\ \\$$$$$$$ |$$ |  $$ |$$ |\\$$$$$$$\\
             value={inputValue}
             onChange={handleInputChange}
             onKeyDown={(e) => handleKeyDown(e)}
+            autoComplete="off"
+            autoCorrect="off"
+            spellCheck="false"
             autoFocus
+            style={{
+              background: "transparent",
+              border: "none",
+              outline: "none",
+              color: text,
+              width: "90%",
+            }}
           />
         </form>
       </div>
