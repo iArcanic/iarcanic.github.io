@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./App.css";
+import { art } from "./utils/asciiArt";
+import { colorSchemes } from "./utils/colorSchemes";
+import { commands } from "./utils/commands";
 import {
   FaGithub,
   FaLinkedin,
@@ -25,115 +28,6 @@ function App() {
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [currentScheme, setCurrentScheme] = useState("default");
-
-  const colorSchemes = {
-    light: {
-      default: {
-        background: "#e6e6e6",
-        text: "#333",
-        asciiArt: "#333",
-        terminalInfo: "#333",
-        prompt: "#7fdbff",
-        command: "#0000ff",
-        result: "#333",
-      },
-      monokai: {
-        background: "#f9f8f5",
-        text: "#272822",
-        asciiArt: "#272822",
-        terminalInfo: "#272822",
-        prompt: "#f92672",
-        command: "#a6e22e",
-        result: "#272822",
-      },
-      gruvbox: {
-        background: "#fbf1c7",
-        text: "#3c3836",
-        asciiArt: "#3c3836",
-        terminalInfo: "#3c3836",
-        prompt: "#d65d0e",
-        command: "#b8bb26",
-        result: "#3c3836",
-      },
-      solarized: {
-        background: "#fdf6e3",
-        text: "#657b83",
-        asciiArt: "#657b83",
-        terminalInfo: "#657b83",
-        prompt: "#268bd2",
-        command: "#2aa198",
-        result: "#657b83",
-      },
-      dracula: {
-        background: "#f8f8f2",
-        text: "#282a36",
-        asciiArt: "#282a36",
-        terminalInfo: "#282a36",
-        prompt: "#ff79c6",
-        command: "#50fa7b",
-        result: "#282a36",
-      },
-    },
-    dark: {
-      default: {
-        background: "#222",
-        text: "#fff",
-        asciiArt: "#fff",
-        terminalInfo: "#fff",
-        prompt: "#7fdbff",
-        command: "#00ff00",
-        result: "#fff",
-      },
-      monokai: {
-        background: "#272822",
-        text: "#f8f8f2",
-        asciiArt: "#f8f8f2",
-        terminalInfo: "#f8f8f2",
-        prompt: "#f92672",
-        command: "#a6e22e",
-        result: "#f8f8f2",
-      },
-      gruvbox: {
-        background: "#282828",
-        text: "#ebdbb2",
-        asciiArt: "#ebdbb2",
-        terminalInfo: "#ebdbb2",
-        prompt: "#d65d0e",
-        command: "#b8bb26",
-        result: "#ebdbb2",
-      },
-      solarized: {
-        background: "#002b36",
-        text: "#839496",
-        asciiArt: "#839496",
-        terminalInfo: "#839496",
-        prompt: "#268bd2",
-        command: "#2aa198",
-        result: "#839496",
-      },
-      dracula: {
-        background: "#282a36",
-        text: "#f8f8f2",
-        asciiArt: "#f8f8f2",
-        terminalInfo: "#f8f8f2",
-        prompt: "#ff79c6",
-        command: "#50fa7b",
-        result: "#f8f8f2",
-      },
-    },
-  };
-
-  const commands = [
-    "about",
-    "clear",
-    "help",
-    "repo",
-    "github",
-    "linkedin",
-    "resume",
-    "quit",
-    "exit",
-  ];
 
   useEffect(() => {
     const fetchTimeAndTimezone = () => {
@@ -368,17 +262,6 @@ function App() {
     }
   };
 
-  const asciiArtDisplay = `
-$$\\  $$$$$$\\                                          $$\\           
-\\__|$$  __$$\\                                         \\__|          
-$$\\ $$ /  $$ | $$$$$$\\   $$$$$$$\\  $$$$$$\\  $$$$$$$\\  $$\\  $$$$$$$\\ 
-$$ |$$$$$$$$ |$$  __$$\\ $$  _____| \\____$$\\ $$  __$$\\ $$ |$$  _____|
-$$ |$$  __$$ |$$ |  \\__|$$ /       $$$$$$$ |$$ |  $$ |$$ |$$ /      
-$$ |$$ |  $$ |$$ |      $$ |      $$  __$$ |$$ |  $$ |$$ |$$ |      
-$$ |$$ |  $$ |$$ |      \\$$$$$$$\\ \\$$$$$$$ |$$ |  $$ |$$ |\\$$$$$$$\\ 
-\\__|\\__|  \\__|\\__|       \\_______| \\_______|\\__|  \\__|\\__| \\_______|                        
-  `;
-
   return (
     <div
       className="App"
@@ -417,7 +300,7 @@ $$ |$$ |  $$ |$$ |      \\$$$$$$$\\ \\$$$$$$$ |$$ |  $$ |$$ |\\$$$$$$$\\
       </div>
       <div className="terminal-content" style={applyColorScheme()}>
         <pre className="ascii-art" style={{ color: asciiArt }}>
-          {asciiArtDisplay}
+          {art}
         </pre>
         <div
           className="terminal-welcome"
