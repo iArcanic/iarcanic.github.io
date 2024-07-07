@@ -28,6 +28,15 @@ function App() {
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [currentScheme, setCurrentScheme] = useState("default");
+  const [stats, setStats] = useState({
+    publicRepos: 0,
+    followers: 0,
+    following: 0,
+    totalStars: 0,
+    totalForks: 0,
+    accountCreationDate: "",
+    totalCommits: 0,
+  });
 
   useEffect(() => {
     const fetchTimeAndTimezone = () => {
@@ -84,8 +93,11 @@ function App() {
     switch (command.trim().toLowerCase()) {
       case "about":
         newOutput = [
-          "Name: Preetham Ananthkumar",
-          "Website: https://iarcanic.github.io",
+          "> Hi, I'm Preetham (or iArcanic)",
+          "> Currently a third year student at the University of Warwick studying Cybersecurity (BSc)",
+          "> I love martial arts, playing badminton, and going gym",
+          "> I also love to read manga, most notably: Berserk, Vagabond, and Vinland Saga",
+          "> Most importantly, I'm a Christian, and I love Jesus Christ! AVE CHRISTUS REX!",
         ];
         break;
       case "clear":
@@ -120,6 +132,15 @@ function App() {
           "_blank"
         );
         break;
+      case "resume":
+        newOutput = ["Downloading resume..."];
+        const link = document.createElement("a");
+        link.href = "/resume.pdf"; // Ensure this path is correct
+        link.download = "preetham-ananthkumar-resume.pdf";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        break;
       case "spotify":
         newOutput = ["Redirecting to Spotify profile..."];
         window.open(
@@ -128,6 +149,8 @@ function App() {
         );
         break;
       case "quit":
+        newOutput = ["Goodbye!"];
+        window.close();
       case "exit":
         newOutput = ["Goodbye!"];
         window.close();
@@ -225,8 +248,12 @@ function App() {
     return colorSchemes[isDarkMode ? "dark" : "light"][currentScheme];
   };
 
-  const { background, text, terminalInfo, prompt, command, result, asciiArt } =
+  const { background, text, terminalInfo, prompt, command, result } =
     getCurrentColorScheme();
+
+  const handleSchemeChange = (colorScheme) => {
+    setCurrentScheme(colorScheme);
+  };
 
   const closeTab = () => {
     window.close();
@@ -261,6 +288,66 @@ function App() {
       }
     }
   };
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const userUrl = `https://api.github.com/users/iArcanic`;
+        const reposUrl = `https://api.github.com/users/iArcanic/repos?per_page=100`;
+
+        // Fetch user stats
+        const userResponse = await fetch(userUrl);
+        const userData = await userResponse.json();
+
+        // Fetch repositories stats
+        const reposResponse = await fetch(reposUrl);
+        const reposData = await reposResponse.json();
+
+        // Calculate total stars, forks, and commits
+        let totalStars = 0;
+        let totalForks = 0;
+        let totalCommits = 0;
+
+        for (const repo of reposData) {
+          totalStars += repo.stargazers_count;
+          totalForks += repo.forks_count;
+
+          // Fetch the number of commits for each repo
+          const commitsUrl = `https://api.github.com/repos/iArcanic/${repo.name}/commits?per_page=1`;
+          const commitsResponse = await fetch(commitsUrl);
+
+          if (commitsResponse.headers.get("link")) {
+            const commitCount = parseInt(
+              commitsResponse.headers
+                .get("link")
+                .match(/&page=(\d+)>; rel="last"/)[1]
+            );
+            totalCommits += commitCount;
+          } else {
+            // If there's no 'link' header, it means there are fewer commits and we need to fetch all commits
+            const commitsData = await commitsResponse.json();
+            totalCommits += commitsData.length;
+          }
+        }
+
+        setStats({
+          publicRepos: userData.public_repos,
+          followers: userData.followers,
+          following: userData.following,
+          totalStars: totalStars,
+          totalForks: totalForks,
+          accountCreationDate: new Date(
+            userData.created_at
+          ).toLocaleDateString(),
+          totalCommits: totalCommits,
+        });
+      } catch (error) {
+        console.error("Error fetching GitHub stats:", error);
+      }
+    };
+
+    fetchStats();
+  }, []); // Adding an empty dependency array to run useEffect only once
 
   return (
     <div
@@ -299,14 +386,16 @@ function App() {
         </button>
       </div>
       <div className="terminal-content" style={applyColorScheme()}>
-        <pre className="ascii-art" style={{ color: asciiArt }}>
+        <pre className="ascii-art bold-glow" style={{ color: command }}>
           {art}
         </pre>
         <div
           className="terminal-welcome"
           style={{ color: applyColorScheme().terminalInfo }}
         >
-          Welcome to iArcanic's Portfolio Website!
+          <span style={{ color: prompt }}>
+            Welcome to iArcanic's Portfolio Website!
+          </span>
           <br></br>
           <br />* <FaUserCircle style={{ color: terminalInfo }} />{" "}
           <span style={{ color: command }}>Preetham Ananthkumar</span>
@@ -336,10 +425,10 @@ function App() {
           </a>
           <br />* <FaFilePdf style={{ color: terminalInfo }} />{" "}
           <a
-            href="/path/to/resume.pdf"
+            href="/resume.pdf"
             className="terminal-link"
             style={{ color: command }}
-            download
+            download="preetham-ananthkumar-resume.pdf"
           >
             Download Resume
           </a>
@@ -352,65 +441,165 @@ function App() {
 
         <div className="terminal-info">
           <div className="info-line">
-            <span className="info-label" style={{ color: terminalInfo }}>
-              System load:
-            </span>
-            <span style={{ color: prompt }}>0.01</span>
-            <span className="info-label" style={{ color: terminalInfo }}>
-              Processes:
-            </span>
-            <span style={{ color: prompt }}>231</span>
-          </div>
-          <div className="info-line">
-            <span className="info-label" style={{ color: terminalInfo }}>
-              Usage of /:
-            </span>
-            <span style={{ color: prompt }}>68.0% of 47.41GB</span>
-            <span className="info-label" style={{ color: terminalInfo }}>
-              Users:
-            </span>
-            <span style={{ color: prompt }}>1</span>
-          </div>
-          <div className="info-line">
-            <span className="info-label" style={{ color: terminalInfo }}>
-              Memory usage:
-            </span>
-            <span style={{ color: prompt }}>5%</span>
-            <span className="info-label" style={{ color: terminalInfo }}>
-              IPv4 address:
-            </span>
-            <span style={{ color: prompt }}>192.168.1.89</span>
-          </div>
-          <div className="info-line">
-            <span className="info-label" style={{ color: terminalInfo }}>
-              Swap usage:
-            </span>
-            <span style={{ color: prompt }}>0%</span>
-          </div>
-          <br />
-          <span>*** Type 'help' for a list of all available commands ***</span>
-          <br />
-          <span>
-            *** Type 'repo' to view the GitHub repository or click{" "}
             <a
-              href="https://github.com/iArcanic/iarcanic.github.io"
-              className="terminal-link"
-              download
+              href="https://github.com/iArcanic?tab=repositories"
+              className="terminal-link info-label"
+              style={{ color: terminalInfo }}
             >
-              here
-            </a>{" "}
-            ***
-          </span>
+              Public repos:
+            </a>
+            <span style={{ color: prompt }}>{stats.publicRepos}</span>
+            <a
+              href="https://github.com/iArcanic?tab=followers"
+              className="terminal-link info-label"
+              style={{ color: terminalInfo }}
+            >
+              Followers:
+            </a>
+            <span style={{ color: prompt }}>{stats.followers}</span>
+          </div>
+          <div className="info-line">
+            <a
+              href="https://github.com/iArcanic?tab=followers"
+              className="terminal-link info-label"
+              style={{ color: terminalInfo }}
+            >
+              Following:
+            </a>
+            <span style={{ color: prompt }}>{stats.following}</span>
+            <span className="info-label" style={{ color: terminalInfo }}>
+              Total stars:
+            </span>
+            <span style={{ color: prompt }}>{stats.totalStars}</span>
+          </div>
+          <div className="info-line">
+            <span className="info-label" style={{ color: terminalInfo }}>
+              Total forks:
+            </span>
+            <span style={{ color: prompt }}>{stats.totalForks}</span>
+            <span className="info-label" style={{ color: terminalInfo }}>
+              Total commits:
+            </span>
+            <span style={{ color: prompt }}>{stats.totalCommits}</span>
+          </div>
+          <div className="info-line">
+            <span className="info-label" style={{ color: terminalInfo }}>
+              Creation date:
+            </span>
+            <span style={{ color: prompt }}>{stats.accountCreationDate}</span>
+          </div>
           <br />
-          <span>
-            *** Toggle between light and dark modes with the icon at the top
-            left ***
-          </span>
-          <br />
-          <span>
-            *** Use keys (1, 2, 3, 4, 5) or buttons at the top left to change
-            colour scheme ***
-          </span>
+          <div>
+            <span>
+              *** Type{" "}
+              <span className="bold-glow" style={{ color: command }}>
+                'help'
+              </span>{" "}
+              for a list of all available commands ***
+            </span>
+            <br />
+            <span>
+              *** Type{" "}
+              <span className="bold-glow" style={{ color: command }}>
+                'repo'
+              </span>{" "}
+              to view the GitHub repository or click{" "}
+              <a
+                href="https://github.com/iArcanic/iarcanic.github.io"
+                className="terminal-link"
+                download
+              >
+                <span className="bold-glow" style={{ color: command }}>
+                  'here'
+                </span>
+              </a>{" "}
+              ***
+            </span>
+            <br />
+            <span>
+              *** Toggle between{" "}
+              <span
+                className="bold-glow terminal-link"
+                style={{ color: command }}
+                onClick={toggleDarkMode}
+              >
+                light
+              </span>{" "}
+              and{" "}
+              <span
+                className="bold-glow terminal-link"
+                style={{ color: command }}
+                onClick={toggleDarkMode}
+              >
+                dark
+              </span>{" "}
+              modes with the icon at the top left ***
+            </span>
+            <br />
+            <span>
+              *** Use keys (
+              <span
+                className="bold-glow terminal-link"
+                style={{ color: command }}
+                onClick={() => handleSchemeChange("default")}
+              >
+                1
+              </span>
+              ,{" "}
+              <span
+                className="bold-glow terminal-link"
+                style={{ color: command }}
+                onClick={() => handleSchemeChange("monokai")}
+              >
+                2
+              </span>
+              ,{" "}
+              <span
+                className="bold-glow terminal-link"
+                style={{ color: command }}
+                onClick={() => handleSchemeChange("gruvbox")}
+              >
+                3
+              </span>
+              ,{" "}
+              <span
+                className="bold-glow terminal-link"
+                style={{ color: command }}
+                onClick={() => handleSchemeChange("solarized")}
+              >
+                4
+              </span>
+              ,{" "}
+              <span
+                className="bold-glow terminal-link"
+                style={{ color: command }}
+                onClick={() => handleSchemeChange("dracula")}
+              >
+                5
+              </span>
+              ) or buttons at the top left to change colour scheme ***
+            </span>
+            <br />
+            <span>
+              *** Use{" "}
+              <span className="bold-glow" style={{ color: command }}>
+                [TAB]
+              </span>
+              ,{" "}
+              <span className="bold-glow" style={{ color: command }}>
+                [CTRL+A]
+              </span>
+              ,{" "}
+              <span className="bold-glow" style={{ color: command }}>
+                [CTRL+E]
+              </span>
+              , and{" "}
+              <span className="bold-glow" style={{ color: command }}>
+                [CTRL+U]
+              </span>{" "}
+              keys for typical terminal functionality ***
+            </span>
+          </div>
           <br />
           <br />
           <span style={{ color: terminalInfo }}>Last login: {timezone}</span>
@@ -419,9 +608,9 @@ function App() {
         <br />
         <div className="output-container">
           {outputs.map((output, index) => (
-            <div key={index} className="command-output">
-              <div className="command" style={{ color: command }}>
-                iarcanic@portfolio:~$&nbsp; {output.command}
+            <div key={index} className="command-input">
+              <div className="command" style={{ color: prompt }}>
+                iarcanic@portfolio:~$ {output.command}
               </div>
               {output.output.map((line, idx) => (
                 <pre key={idx} className="output" style={{ color: result }}>

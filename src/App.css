@@ -146,7 +146,6 @@ body {
   display: flex;
   align-items: center;
   font-size: 1rem;
-  padding: 0.5rem;
   color: #cccccc; /* Light gray color for prompt */
 }
 
@@ -193,20 +192,6 @@ body {
   font-family: "Courier New", Courier, monospace;
   color: #ffffff;
   margin-bottom: 20px;
-}
-
-#command-input {
-  animation: afterglow 1.5s ease-in-out infinite;
-}
-
-@keyframes afterglow {
-  0%,
-  100% {
-    text-shadow: 0 0 15px rgba(255, 255, 255, 1);
-  }
-  50% {
-    text-shadow: 0 0 25px rgba(255, 255, 255, 1);
-  }
 }
 
 .output-container {
@@ -274,4 +259,19 @@ body {
   width: 12px;
   height: 12px;
   border-radius: 50%;
+}
+
+.bold-glow {
+  font-weight: bold;
+  animation: afterglow 2s ease-in-out infinite;
+}
+
+@keyframes afterglow {
+  0%,
+  100% {
+    text-shadow: 0 0 15px rgb(255, 255, 255);
+  }
+  50% {
+    text-shadow: 0 0 25px rgb(255, 255, 255);
+  }
 }
