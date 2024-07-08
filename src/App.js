@@ -14,6 +14,8 @@ import {
   FaTimes,
   FaMinus,
   FaExpand,
+  FaDiscord,
+  FaSpotify,
 } from "react-icons/fa";
 import hljs from "highlight.js";
 import "highlight.js/styles/monokai-sublime.css";
@@ -94,7 +96,7 @@ function App() {
       case "about":
         newOutput = [
           "> Hi, I'm Preetham (or iArcanic)",
-          "> Currently a third year student at the University of Warwick studying Cybersecurity (BSc)",
+          "> I'm currently a third year student at the University of Warwick studying Cybersecurity (BSc)",
           "> I love martial arts, playing badminton, and going gym",
           "> I also love to read manga, most notably: Berserk, Vagabond, and Vinland Saga",
           "> Most importantly, I'm a Christian, and I love Jesus Christ! AVE CHRISTUS REX!",
@@ -106,14 +108,16 @@ function App() {
       case "help":
         newOutput = [
           "Available commands:",
-          "- about: Display information about me",
-          "- clear: Clear the terminal screen",
           "- help: Display this help message",
-          "- repo: Redirect to this website's GitHub repository",
-          "- github: Redirect to iArcanic's GitHub Profile",
-          "- linkedin: Redirect to iArcanic's Linkedin Profile",
-          "- resume: Download iArcanic's resume PDF",
-          "- spotify: Redirec to iArcanic's Spotify Profile",
+          "- clear: Clear the terminal screen",
+          "- about: Display information about iArcanic",
+          "- repo: Redirect to this website's GitHub repository (iarcanic/iarcanic.github.io)",
+          "- github: Redirect to iArcanic's GitHub Profile (iArcanic)",
+          "- linkedin: Redirect to iArcanic's LinkedIn Profile (preetham-a-1810781b1)",
+          "- resume: Download iArcanic's resume as a PDF",
+          "- discord: Redirect to iArcanic's Discord Profile (_preet_)",
+          "- spotify: Redirect to iArcanic's Spotify Profile (P r x x t;)",
+          "- sudo rm -rf /*: Delete the root directory and wipe out the system entierly (Uhhhh please don't try this command...)",
           "- quit or exit: Close this tab",
         ];
         break;
@@ -135,7 +139,7 @@ function App() {
       case "resume":
         newOutput = ["Downloading resume..."];
         const link = document.createElement("a");
-        link.href = "/resume.pdf"; // Ensure this path is correct
+        link.href = "/resume.pdf";
         link.download = "preetham-ananthkumar-resume.pdf";
         document.body.appendChild(link);
         link.click();
@@ -148,12 +152,26 @@ function App() {
           "_blank"
         );
         break;
+      case "discord":
+        newOutput = ["Redirecting to Discord profile..."];
+        window.open("https://discord.gg/8KgcEmtM", "_blank");
+        break;
       case "quit":
         newOutput = ["Goodbye!"];
         window.close();
+        break;
       case "exit":
         newOutput = ["Goodbye!"];
         window.close();
+        break;
+      case "sudo rm -rf /*":
+        newOutput = [
+          "I told you not to do that, didn't I... •`_´•",
+          "I warned you...",
+          "zsh: cannot remove '/': Operation not permitted",
+          "zsh: cannot remove '/*': Operation not permitted",
+        ];
+        window.open("https://www.youtube.com/watch?v=dQw4w9WgXcQ", "_blank");
         break;
       default:
         newOutput = [
@@ -432,6 +450,22 @@ function App() {
           >
             Download Resume
           </a>
+          <br />* <FaDiscord style={{ color: terminalInfo }} />{" "}
+          <a
+            href="https://discord.gg/8KgcEmtM"
+            className="terminal-link"
+            style={{ color: command }}
+          >
+            _preet_
+          </a>
+          <br />* <FaSpotify style={{ color: terminalInfo }} />{" "}
+          <a
+            href="https://open.spotify.com/user/mqn5u81bu4cam0fut7hc417aa"
+            className="terminal-link"
+            style={{ color: command }}
+          >
+            P r x x t;
+          </a>
           <br></br>
           <br></br>
           <span style={{ color: terminalInfo }}>
@@ -583,6 +617,14 @@ function App() {
             <span>
               *** Use{" "}
               <span className="bold-glow" style={{ color: command }}>
+                [ARROW UP]
+              </span>
+              ,{" "}
+              <span className="bold-glow" style={{ color: command }}>
+                [ARROW DOWN]
+              </span>
+              ,{" "}
+              <span className="bold-glow" style={{ color: command }}>
                 [TAB]
               </span>
               ,{" "}
@@ -597,7 +639,19 @@ function App() {
               <span className="bold-glow" style={{ color: command }}>
                 [CTRL+U]
               </span>{" "}
-              keys for typical terminal functionality ***
+              key shortcuts ***
+            </span>
+            <br />
+            <span>
+              *** Use the top left window controls to{" "}
+              <span className="bold-glow" style={{ color: command }}>
+                close (red)
+              </span>{" "}
+              or{" "}
+              <span className="bold-glow" style={{ color: command }}>
+                maximise (green)
+              </span>{" "}
+              the window ***
             </span>
           </div>
           <br />

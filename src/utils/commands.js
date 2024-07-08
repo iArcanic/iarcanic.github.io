@@ -6,6 +6,9 @@ export const commands = [
   "github",
   "linkedin",
   "resume",
+  "discord",
+  "spotify",
   "quit",
   "exit",
+  "sudo rm -rf /*",
 ];
