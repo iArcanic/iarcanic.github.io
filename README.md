@@ -75,6 +75,10 @@ Currently, there are five colour schemes, available in both light and dark modes
 
 ### 3.4 Real-time GitHub stats
 
+The page's mock server information displays the following GitHub account statistics:
+
+![](docs/README-images/github-stats.png)
+
 ### 3.5 MacOS style window controls
 
 ![](docs/README-images/window-controls.png)
